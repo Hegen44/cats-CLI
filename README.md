@@ -22,7 +22,7 @@ cats create [<args>]
 ```
 * Options:
    * `--name <name>` - add name to the new cat.
-   * `--bread <bread>` - add bread to the new cat.
+   * `--breed <bread>` - add breed to the new cat.
    * `--age <age>` - add age to the new cat. Only accept positive number.
 #### Read
 List all cats entry in the file.
@@ -37,7 +37,7 @@ cats update [<args>]
 * Options:
   * `<id>` - indexes of cats to update content from.
   * `--name <name>` - update only the name of the cats.
-  * `--bread <bread` - update only the bread of the cats.
+  * `--breed <breed` - update only the breed of the cats.
   * `--age <age>`" - update only the age of the cats. Only accept positive number.
 #### Delete
 Delete cats from file.
