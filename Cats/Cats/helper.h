@@ -5,9 +5,9 @@
 #include <string>
 #include "crud.h"
 
-bool isArgument(const std::string& str);
-int converToNumber(const char* str);
-int idSearch(const int id, const std::vector<cats> vec);
+bool IsArgument(const std::string& str);
+int ConverToNumber(const char* str);
+int IDSearch(const int id, const std::vector<cats> vec);
 void Help();
 
 #endif

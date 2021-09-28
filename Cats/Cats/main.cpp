@@ -1,4 +1,4 @@
-// main.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// main.cpp : This file contains the 'main' function. 
 //
 #include <iostream>
 #include <fstream>
@@ -20,69 +20,63 @@ unordered_map<string, int> dictionary = {
     { "help",   5}
 };
 
+/**
+    Program execution begins and ends there.
+
+    @param argc command argument counts
+    @param argv command argument vector
+*/
 int main(int argc, char** argv)
 {
-    
-
-    // no command
+    /*---------------------------------------------------------
+     *  Has no argument, display help informaiton to the user
+     *  and exit the program
+     *---------------------------------------------------------*/
     if (argc <= 1) {
         Help();
-        cout << "\n\npress any key to continue";
-        cin.get();
         return 0;
     }
 
-    //===============================================================================================
+    /*---------------------------------------------------------
+     *  Read data from cats.txt and store them into 'Record'.
+     *  if no cats.txt detected, then the program will create one
+     *  at the current directory. If create operation is failed,
+     *  display error message and exit program.
+     *---------------------------------------------------------*/
+    Record R;
 
     string filename = "cats.txt";
     fstream fsfile;
+    fsfile.open(filename, fstream::in);
 
-    Record R;
-
-    fsfile.open(filename, fstream::in | fstream::out);
-
-
-    // If file does not exist, Create new file
-    if (!fsfile)
-    {
+    if (!fsfile) {
         cout << "Cannot open '" + filename + "', file does not exist. Creating new file.." << endl;
-
         fsfile.open(filename, fstream::out | fstream::trunc);
-        if (fsfile.is_open())
+        if (!fsfile.is_open())
         {
-            cout << "successfully created '" + filename + "' in the current directory" << endl;
-            fsfile << R.id << endl;
-        }
-        else {
             cout << "failed to create '" + filename + "' in the current directory, please try again in another directory." << endl;
             return -1;
         }
-
+        cout << "successfully created '" + filename + "' in the current directory" << endl;
+        fsfile << R.id << endl;
+        fsfile.close();
     }
-    else
-    {    // use existing file
+    else {
+       
         fsfile >> R.id;
-
-        int id;
-        string name;
-        string bread;
-        int age;
-
-        while (fsfile >> id >> name >> bread >> age) {
-            cats cat;
-            cat.id = id;
-            cat.name = name;
-            cat.bread = bread;
-            cat.age = age;
+        cats cat;
+        while (fsfile >> cat.id >> cat.name >> cat.breed >> cat.age) {
             R.data.push_back(cat);
         }
 
-        if (R.data.size() == 0) R.id = 0; // reset id if it is empty           
+        if (R.data.size() == 0) R.id = 0; // reset id if it is empty    
+        fsfile.close();
     }
-    fsfile.close();
-
-    //===============================================================================================
-
+ 
+    /*---------------------------------------------------------
+     *  Take the progam to different base the first argument,
+     *  and their corressponding code in the dictionary
+     *---------------------------------------------------------*/
     try {
         string key = argv[1];
         int n = dictionary.count(key) > 0 ? dictionary[key] : -1;
@@ -94,34 +88,33 @@ int main(int argc, char** argv)
             }
             case 2: { // read
                 if (R.data.size() < 1) {
-                    cout << "file is empty, there is nothing to read" << endl;
+                    cout << "log: File is empty, there is nothing to read" << endl;
                     return 0;
                 }
                 Read(R);
                 break;
             }
-            case 3: {
-                // if no id or arguments given 
-                if (argc <= 2)  
+            case 3: { // update
+                if (argc <= min_argc)  
                     throw invalid_argument("missing ID or argument. See 'cats help'.");
                 if (R.data.size() < 1) {
-                    cout << "file is empty, there is nothing to update" << endl;
+                    cout << "log: File is empty, there is nothing to update" << endl;
                     return 0;
                 }
                 Update(argc, argv, R);
                 break;
             }
-            case 4: {
-                if (argc <= 2)
+            case 4: { //delete
+                if (argc <= min_argc)
                     throw invalid_argument("missing ID or argument. See 'cats help'.");
                 if (R.data.size() < 1) {
-                    cout << "file is empty, there is nothing to delete" << endl;
+                    cout << "log: File is empty, there is nothing to delete" << endl;
                     return 0;
                 }
                 Delete(argc, argv, R);
                 break;
             }
-            case 5: {
+            case 5: { //help
                 Help();
                 break;
             }
@@ -131,37 +124,26 @@ int main(int argc, char** argv)
             }
         }
 
-        //===============================================================================================
-
-        fsfile.open(filename, ios::out | ios::trunc);
-        fsfile << R.id << endl;
-        if (fsfile.is_open()) {
-            for (cats c : R.data) {
-                fsfile << c.id << " " << c.name << " " << c.bread << " " << c.age << endl;
-            }
-        }
-
-        fsfile.close();
-
-    }
-    
-    catch (const invalid_argument& e) {
+    } catch (const invalid_argument& e) {
         cerr << "error: " << e.what() << endl;
-        // do stuff with exception... 
+        return -1;
     }
+
+    /*---------------------------------------------------------
+     *  Save and overwrite all the data in the cats.txt with newest 
+     *  data from 'Record'
+     *---------------------------------------------------------*/
+
+    fsfile.open(filename, ios::out | ios::trunc);
+    fsfile << R.id << endl;
+    if (fsfile.is_open()) {
+        for (cats c : R.data) {
+            fsfile << c.id << " " << c.name << " " << c.breed << " " << c.age << endl;
+        }
+    }
+
+    fsfile.close();
 
 
     return 0;
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
