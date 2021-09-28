@@ -1,8 +1,13 @@
 #pragma once
-#include <string>
-#include <sstream>
-using namespace std;
+#ifndef HELPER_H
+#define HELPER_H
 
-bool isNumber(const string& str);
-bool isArgument(const string& str);
-int stringToInt(const string& str);
+#include <string>
+#include "crud.h"
+
+bool isArgument(const std::string& str);
+int converToNumber(const char* str);
+int idSearch(const int id, const std::vector<cats> vec);
+void Help();
+
+#endif
